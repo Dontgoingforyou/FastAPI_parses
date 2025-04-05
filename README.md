@@ -1,3 +1,5 @@
 # FastAPI_parses
 
-docker compose up --build
+uvicorn app.main:app --reload
+
+pytest -s
