@@ -16,15 +16,15 @@ from app.schemas import SpimexTradingResultResponse, SpimexTradingResultQuery
 router = APIRouter(prefix="", tags=["Эндпоинты"])
 
 
+
 @router.post("/fetch_data/")
 async def fetch_data(
         background_tasks: BackgroundTasks,
-        db: AsyncSession = Depends(get_db),
         n: Optional[int] = Query(ge=1, le=30, description="Количество файлов для скачивания")
 ):
     """ Запускает процесс скачивания и парсинга данных в фоне """
 
-    background_tasks.add_task(fetch_and_parse_data, db, n)
+    background_tasks.add_task(fetch_and_parse_data, n)
     return {"message": f"Процесс скачивания и парсинга запущен на фоне для {n} файлов"}
 
 
@@ -49,7 +49,10 @@ async def get_last_trading_dates(
     )
     data = [row[0] for row in result.all()]
 
-    await set_cached_data(cache_key, data)
+    if not data:
+        await set_cached_data(cache_key, [])
+    else:
+        await set_cached_data(cache_key, data)
     return data
 
 
@@ -113,6 +116,7 @@ async def get_trading_results(
     if cached_data:
         return cached_data
 
+    # Если данных нет в кэше, загружаем их из БД и кэшируем
     data = await get_trading_results_query(db, filters, limit, offset)
     data_pydantic = [SpimexTradingResultResponse.model_validate(item) for item in data]
 

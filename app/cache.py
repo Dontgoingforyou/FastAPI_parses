@@ -10,15 +10,22 @@ async def get_redis():
 
     global redis
     if not redis:
-        redis = await Redis.from_url("redis://redis:6379")
+        redis = await Redis.from_url("redis://localhost:6379")
     return redis
 
 
 async def get_cached_data(key: str):
     """ Получение данных из кэша """
 
+    print(f"Попытка получить данные из кэша для получения ключа: {key}")
     r = await get_redis()
     data = await r.get(key)
+
+    if data:
+        print(f"Данные из кэша для ключа: {key}")
+    else:
+        print(f"Нет данных в кэше для ключа: {key}")
+
     return json.loads(data) if data else None
 
 
@@ -42,6 +49,7 @@ async def set_cached_data(key: str, value):
 
     expire_seconds = (reset_time - now).total_seconds()
     await r.set(key, json.dumps(value, default=date_converter), ex=int(expire_seconds))
+    print(f"Данные для ключа: {key}, истекает в: {reset_time}")
 
 
 async def clear_cache():

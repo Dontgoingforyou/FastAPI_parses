@@ -14,7 +14,13 @@ POSTGRES_USER = os.getenv("POSTGRES_USER")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT")
 
+MODE = os.getenv("MODE")
+
 DATABASE_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_NAME}"
+
+print(f"Final DATABASE_URL in app.database: {DATABASE_URL}")
+print(f"MODE in app.database: {MODE}")
+
 ADMIN_DATABASE_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/postgres"
 
 engine = create_async_engine(DATABASE_URL, echo=True)

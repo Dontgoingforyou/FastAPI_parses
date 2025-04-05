@@ -3,7 +3,6 @@ import aiohttp
 
 from datetime import datetime, timedelta
 
-# Папка для сохранения файлов
 SAVE_DIR = "spimex_reports"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
@@ -11,10 +10,9 @@ BASE_URL = "https://spimex.com/upload/reports/oil_xls/oil_xls_"
 
 
 async def find_latest_spimex_report(n):
-    """Ищет последний доступный файл, начиная с текущей даты и двигаясь назад."""
+    """ Ищет последний доступный файл, начиная с текущей даты и двигаясь назад """
     today = datetime.today()
     found_files = []
-
 
     async with aiohttp.ClientSession() as session:
         for i in range(30):
@@ -39,7 +37,7 @@ async def find_latest_spimex_report(n):
 
 
 async def download_spimex_report(report_url):
-    """Скачивает последний найденный отчет."""
+    """ Скачивает последний найденный отчет """
 
     filename = os.path.basename(report_url)
     file_path = os.path.join(SAVE_DIR, filename)
